@@ -1,0 +1,55 @@
+---
+- hosts: dokkuservers
+  roles:
+    - dokku_bot.ansible_dokku
+  vars:
+    dokku_users:
+      - name: Gauthier Monserand
+        username: simkim
+        ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAEAQCjQqKqJJhrCXltdC20+OjTZED8bRF3KWtIDqaRP/AEcmvgfwB1S7ySScBrX2jMRlGMN1o9gG0Yof7XVD/3/m2MPLzZe3rdRO06wczFA2dyoINJ21w7L7HB3gAc7ouxUB/QUM0yFx2VKzNG4TIzZz6j2tZi2AgadDAdqp0DNQdZf+zuO0Lq/gWOr54VUXNlypZMfcZ+ZMABxYSzEl+HXgI2h3XXubi1TQTFVdRbuE7o8KK8Cy1kWuVj6SezekIftOjD5OcbIX0ZLwHWrANzzywB+j7JU1jlF55JMJc4lUuC+crC8AyTgndvmy3tlmnIQUiAxXSdJMU01aM7qkI3k1ElrBoh8TOroYP8BJsxw5Lx9vndSeyXTq8T9i4c/jtIFOhvPGOCvEOeXDmEoe7l2gJdp7e7nubNJtjOxMKBlsu/Xw2cBzDHhX1AJDyyxVxoMTiZGBSJmm16R3U0OLuqcjeYcS90GNlw76rO49UQzfiRw8QF3QuBQuGjFFw/qcrPYXC8awp6mJxGYvGzou3SVCJ+FHRq6GsAl2VDEhD7ayG1v/iT38G1fpk04b4lR55AKTiFebETqH1rqVMDboetKLSSOVZVoFe499IVLPD8vLdB17bELfWMMC9ymEoi2GqiCibVmQc+jUu/Bl1zaWRsB4g5qkZUTz1FuTVhcXposl2yI5DFZfX/oX7Tj/w+1yTqkvNbbvHPQS9MN1r7eyLipq9f357mcmCcUjcqB0RRuFNl8LTqfU1R5sbbka4YVkMdZbyC2avrWGSnSPHrQjAwSUA/jnhf68vvfux2+XwsR/i3EB2sjXPq4ZgHjuXbT/0IiKZ7XoisiYX1GBdenfDzUT80+RcfoRPGuDvQ7g2N2MPAeSaDS4Igjj64moNNfX4piUiIk0yagCUqUfwzArnJFf3yrry4dVorr06YZb9RHTo3OPynlVEnFGHChuwMH/au2lhO9CiavuKiUo6dzN38VAyN/C9hTDjMx9yEkN8AOwPlcbnctbTb4DnxL0dkpNuNcmGnvVavPB8mCVFalL4JuLn8M7piUDsgL0tvjPZx9VlYyZJQRhIpGHWnf2mUksOEQT10wLfpDFKcN9cF3FTklrOOmuqT7QHGk6T/aB+tjWG20EVqEC+2jtoI9geFs9nvzCM1qfjXHiUS9gkY5EWtbQJZmGkISWjtLejbdtbJWRf0meNk0MWfhyg0oIRzG7/L7luhckM89B3oZguVXxgnB973tDTzylSQ5lpzl1iMTHRHBOw9Z6w6uZA/8J6I5sLCAcqjXOfX1+J6HRaPOR+3rQ6UdArs3uha9ttCxHYw6x+2Baz6PbW/lP2in18ZyumjwoLQNW75I/VhFHTDjTIMDQMJ simkim@carpe"
+    dokku_plugins:
+      - name: clone
+        url: https://github.com/crisward/dokku-clone.git
+      - name: redis
+        url: https://github.com/dokku/dokku-redis.git
+      - name: postgres
+        url: https://github.com/dokku/dokku-postgres.git
+  tasks:
+    - name: create app
+      dokku_app:
+        app: helloapp
+    - name: redis:create default
+      dokku_service_create:
+        name: default
+        service: redis
+    - name: postgres:create default
+      dokku_service_create:
+        name: default
+        service: postgres
+    - name: redis:link default helloapp
+      dokku_service_link:
+        app: helloapp
+        name: default
+        service: redis
+    - name: postgres:link default helloapp
+      dokku_service_link:
+        app: helloapp
+        name: default
+        service: postgres
+    - name: environment configuration
+      dokku_config:
+        app: helloapp
+        config:
+          RAILS_ENV: "production"
+          RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+    - name: git clone
+      dokku_clone:
+        app: helloapp
+        repository: https://github.com/simkim/repos.git
+        version: main
+    - name: add domain
+      dokku_domains:
+        app: helloapp
+        domains:
+          - repos.simkim.net
+          - repos.dokku2

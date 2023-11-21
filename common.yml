@@ -1,0 +1,21 @@
+---
+- hosts: all
+  tasks:
+  - name: "Install standard packages"
+    apt: name={{item}} state=latest
+    become: true
+    with_items:
+    - sudo
+    - tmux
+    - psmisc
+    - vim-nox
+  - name: Make sure we have a 'docker' group
+    become: true
+    group:
+      name: docker
+      state: present
+  - name: "Configure inotify limit"
+    become: true
+    sysctl:
+      name: fs.inotify.max_user_watches
+      value: 524288
