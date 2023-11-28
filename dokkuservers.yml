@@ -3,6 +3,7 @@
   roles:
     - dokku_bot.ansible_dokku
   vars:
+    dokku_daemon_version: "0.32.3"
     dokku_users:
       - name: Gauthier Monserand
         username: simkim
@@ -17,7 +18,7 @@
   tasks:
     - name: create app
       dokku_app:
-        app: helloapp
+        app: repos
     - name: redis:create default
       dokku_service_create:
         name: default
@@ -26,30 +27,24 @@
       dokku_service_create:
         name: default
         service: postgres
-    - name: redis:link default helloapp
+    - name: redis:link default repos
       dokku_service_link:
-        app: helloapp
+        app: repos
         name: default
         service: redis
-    - name: postgres:link default helloapp
+    - name: postgres:link default repos
       dokku_service_link:
-        app: helloapp
+        app: repos
         name: default
         service: postgres
     - name: environment configuration
       dokku_config:
-        app: helloapp
+        app: repos
         config:
           RAILS_ENV: "production"
           RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
     - name: git clone
       dokku_clone:
-        app: helloapp
+        app: repos
         repository: https://github.com/simkim/repos.git
-        version: main
-    - name: add domain
-      dokku_domains:
-        app: helloapp
-        domains:
-          - repos.simkim.net
-          - repos.dokku2
+        version: add-bash
