@@ -1,0 +1,51 @@
+- name: create app
+  dokku_app:
+    app: repos
+- name: redis:create default
+  dokku_service_create:
+    name: default
+    service: redis
+- name: postgres:create default
+  dokku_service_create:
+    name: default
+    service: postgres
+- name: redis:link default repos
+  dokku_service_link:
+    app: repos
+    name: default
+    service: redis
+- name: postgres:link default repos
+  dokku_service_link:
+    app: repos
+    name: default
+    service: postgres
+- name: environment configuration
+  dokku_config:
+    app: repos
+    config:
+      RAILS_ENV: "production"
+      RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+      RAILS_SERVE_STATIC_FILES: "true"
+- name: git clone
+  dokku_clone:
+    app: repos
+    repository: https://github.com/simkim/repos.git
+    version: add-bash
+- name: domains:remove repo.dokku.me
+  dokku_domains:
+    app: repos
+    domains:
+      - repos.dokku.me
+    state: absent
+- name: domain
+  dokku_domains:
+    app: repos
+    domains:
+      - repos.data.code.gouv.fr
+      - data.code.gouv.fr
+- name: Set letsencrypt email
+  ansible.builtin.shell: dokku letsencrypt:set repos email tech@code.gouv.fr
+- name: Enable letsencrypt
+  dokku_letsencrypt:
+    app: repos
+
