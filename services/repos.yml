@@ -30,7 +30,7 @@
   dokku_clone:
     app: repos
     repository: https://github.com/simkim/repos.git
-    version: add-bash
+    version: production
 - name: domains:remove repo.dokku.me
   dokku_domains:
     app: repos
