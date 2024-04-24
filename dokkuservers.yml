@@ -49,8 +49,8 @@
     - name: git clone
       dokku_clone:
         app: repos
-        repository: https://github.com/simkim/repos.git
-        version: add-bash
+        repository: https://github.com/codegouvfr/ecosystems-repos.git
+        version: main
     - name: domains:remove repo.dokku.me
       dokku_domains:
         app: repos
