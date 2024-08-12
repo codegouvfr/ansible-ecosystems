@@ -51,7 +51,7 @@
       dokku_clone:
         app: repos
         repository: https://github.com/codegouvfr/ecosystems-repos.git
-        version: custom_api_host 
+        version: main 
     - name: domains:remove repo.dokku.me
       dokku_domains:
         app: repos
