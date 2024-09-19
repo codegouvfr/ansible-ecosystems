@@ -51,7 +51,7 @@
       dokku_clone:
         app: repos
         repository: https://github.com/codegouvfr/ecosystems-repos.git
-        version: main 
+        version: improve-dinum-synchro
     - name: domains:remove repo.dokku.me
       dokku_domains:
         app: repos
@@ -69,4 +69,3 @@
     - name: Enable letsencrypt
       dokku_letsencrypt:
         app: repos
-
