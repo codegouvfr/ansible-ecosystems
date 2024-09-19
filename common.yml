@@ -10,7 +10,7 @@
     - psmisc
     - vim-nox
     - dirvish # backup
-    - postgresl-client-15 # backup
+    - postgresql-client-15 # backup
   - name: Make sure we have a 'docker' group
     become: true
     group:
