@@ -47,6 +47,7 @@
           RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
           RAILS_SERVE_STATIC_FILES: "true"
           API_HOST: "https://data.code.gouv.fr"
+          SKIP_USER_REPOS: "1"
     - name: git clone
       dokku_clone:
         app: repos
