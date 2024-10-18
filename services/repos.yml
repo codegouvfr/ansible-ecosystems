@@ -30,6 +30,8 @@
       SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
       SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
       SKIP_USER_REPOS: "1"
+      PARSER_DOMAIN: "https://parser.data.code.gouv.fr"
+      COMMITS_DOMAIN: "https://commits.data.code.gouv.fr"
 - name: git clone
   dokku_clone:
     app: repos
