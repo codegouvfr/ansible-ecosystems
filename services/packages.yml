@@ -1,0 +1,58 @@
+- name: create app
+  dokku_app:
+    app: packages
+- name: redis:create redis-packages
+  dokku_service_create:
+    name: redis-packages
+    service: redis
+- name: postgres:create db-packages
+  dokku_service_create:
+    name: db-packages
+    service: postgres
+- name: redis:link redis-packages packages
+  dokku_service_link:
+    app: packages
+    name: redis-packages
+    service: redis
+- name: postgres:link db-packages packages
+  dokku_service_link:
+    app: packages
+    name: db-packages
+    service: postgres
+- name: environment configuration
+  dokku_config:
+    app: packages
+    config:
+      RAILS_ENV: "production"
+      RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+      RAILS_SERVE_STATIC_FILES: "true"
+      API_HOST: "https://packages.code.gouv.fr"
+      SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
+      SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
+- name: git clone
+  dokku_clone:
+    app: packages
+    repository: https://github.com/codegouvfr/ecosystems-packages.git
+    version: add_bash
+- name: domain packages
+  dokku_domains:
+    app: packages
+    domains:
+      - packages.data.code.gouv.fr
+- name: domains:remove packages.dokku.me
+  dokku_domains:
+    app: packages
+    domains:
+      - packages.dokku.me
+    state: absent
+- name: Set letsencrypt email (packages)
+  ansible.builtin.shell: dokku letsencrypt:set packages email tech@code.gouv.fr
+- name: Enable letsencrypt (packages)
+  dokku_letsencrypt:
+    app: packages
+- name: scale web and worker processes
+  dokku_ps_scale:
+    app: packages
+    scale:
+      web: 1
+      worker: 1

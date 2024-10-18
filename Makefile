@@ -4,7 +4,7 @@ site:
 	$(ANSIBLE_PLAYBOOK) site.yml
 common:
 	$(ANSIBLE_PLAYBOOK) common.yml
-dokku: check_master_key
+dokku:
 	$(ANSIBLE_PLAYBOOK) dokkuservers.yml
 deps:
 	ansible-galaxy role install dokku_bot.ansible_dokku

@@ -1,0 +1,57 @@
+- name: create app
+  dokku_app:
+    app: commits
+- name: redis:create redis-commits
+  dokku_service_create:
+    name: redis-commits
+    service: redis
+- name: postgres:create db-commits
+  dokku_service_create:
+    name: db-commits
+    service: postgres
+- name: redis:link redis-commits commits
+  dokku_service_link:
+    app: commits
+    name: redis-commits
+    service: redis
+- name: postgres:link db-commits commits
+  dokku_service_link:
+    app: commits
+    name: db-commits
+    service: postgres
+- name: environment configuration
+  dokku_config:
+    app: commits
+    config:
+      RAILS_ENV: "production"
+      RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+      RAILS_SERVE_STATIC_FILES: "true"
+      API_HOST: "https://commits.code.gouv.fr"
+      SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
+      SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
+- name: git clone
+  dokku_clone:
+    app: commits
+    repository: https://github.com/codegouvfr/ecosystems-commits.git
+    version: add_bash
+- name: domain commits
+  dokku_domains:
+    app: commits
+    domains:
+      - commits.data.code.gouv.fr
+- name: domains:remove commits.dokku.me
+  dokku_domains:
+    app: commits
+    domains:
+      - commits.dokku.me
+- name: Set letsencrypt email (commits)
+  ansible.builtin.shell: dokku letsencrypt:set commits email tech@code.gouv.fr
+- name: Enable letsencrypt (commits)
+  dokku_letsencrypt:
+    app: commits
+- name: scale web and worker processes
+  dokku_ps_scale:
+    app: commits
+    scale:
+      web: 1
+      worker: 1

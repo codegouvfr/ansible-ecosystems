@@ -1,0 +1,58 @@
+- name: create app
+  dokku_app:
+    app: parser
+- name: redis:create redis-parser
+  dokku_service_create:
+    name: redis-parser
+    service: redis
+- name: postgres:create db-parser
+  dokku_service_create:
+    name: db-parser
+    service: postgres
+- name: redis:link redis-parser parser
+  dokku_service_link:
+    app: parser
+    name: redis-parser
+    service: redis
+- name: postgres:link db-parser parser
+  dokku_service_link:
+    app: parser
+    name: db-parser
+    service: postgres
+- name: environment configuration
+  dokku_config:
+    app: parser
+    config:
+      RAILS_ENV: "production"
+      RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+      RAILS_SERVE_STATIC_FILES: "true"
+      API_HOST: "https://parser.code.gouv.fr"
+      SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
+      SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
+- name: git clone
+  dokku_clone:
+    app: parser
+    repository: https://github.com/codegouvfr/ecosystems-parser.git
+    version: add_bash
+- name: domain parser
+  dokku_domains:
+    app: parser
+    domains:
+      - parser.data.code.gouv.fr
+- name: domains:remove parser.dokku.me
+  dokku_domains:
+    app: parser
+    domains:
+      - parser.dokku.me
+    state: absent
+- name: Set letsencrypt email (parser)
+  ansible.builtin.shell: dokku letsencrypt:set parser email tech@code.gouv.fr
+- name: Enable letsencrypt (parser)
+  dokku_letsencrypt:
+    app: parser
+- name: scale web and worker processes
+  dokku_ps_scale:
+    app: parser
+    scale:
+      web: 1
+      worker: 1

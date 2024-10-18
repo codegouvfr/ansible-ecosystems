@@ -1,0 +1,57 @@
+- name: create app
+  dokku_app:
+    app: summary
+- name: redis:create redis-summary
+  dokku_service_create:
+    name: redis-summary
+    service: redis
+- name: postgres:create db-summary
+  dokku_service_create:
+    name: db-summary
+    service: postgres
+- name: redis:link redis-summary summary
+  dokku_service_link:
+    app: summary
+    name: redis-summary
+    service: redis
+- name: postgres:link db-summary summary
+  dokku_service_link:
+    app: summary
+    name: db-summary
+    service: postgres
+- name: environment configuration
+  dokku_config:
+    app: summary
+    config:
+      RAILS_ENV: "production"
+      RAILS_MASTER_KEY: "{{ lookup('ansible.builtin.env', 'RAILS_MASTER_KEY') }}"
+      RAILS_SERVE_STATIC_FILES: "true"
+      API_HOST: "https://summary.code.gouv.fr"
+      SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
+      SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
+- name: git clone
+  dokku_clone:
+    app: summary
+    repository: https://github.com/codegouvfr/ecosystems-summary.git
+    version: add_bash
+- name: domain summary
+  dokku_domains:
+    app: summary
+    domains:
+      - summary.data.code.gouv.fr
+- name: domains:remove summary.dokku.me
+  dokku_domains:
+    app: summary
+    domains:
+      - summary.dokku.me
+- name: Set letsencrypt email (summary)
+  ansible.builtin.shell: dokku letsencrypt:set summary email tech@code.gouv.fr
+- name: Enable letsencrypt (summary)
+  dokku_letsencrypt:
+    app: summary
+- name: scale web and worker processes
+  dokku_ps_scale:
+    app: summary
+    scale:
+      web: 1
+      worker: 1
