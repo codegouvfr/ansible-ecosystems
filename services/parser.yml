@@ -33,7 +33,7 @@
   dokku_clone:
     app: parser
     repository: https://github.com/codegouvfr/ecosystems-parser.git
-    version: add_bash
+    version: remove_credentials
 - name: domain parser
   dokku_domains:
     app: parser

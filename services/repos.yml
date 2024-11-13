@@ -32,11 +32,12 @@
       SKIP_USER_REPOS: "1"
       PARSER_DOMAIN: "https://parser.data.code.gouv.fr"
       COMMITS_DOMAIN: "https://commits.data.code.gouv.fr"
+      PACKAGES_DOMAIN: "https://packages.data.code.gouv.fr"
 - name: git clone
   dokku_clone:
     app: repos
     repository: https://github.com/codegouvfr/ecosystems-repos.git
-    version: improve-dinum-synchro
+    version: package_usage_api
 - name: domain
   dokku_domains:
     app: repos
@@ -59,4 +60,4 @@
     app: repos
     scale:
       web: 1
-      worker: 1
+      worker: 0
