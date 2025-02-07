@@ -40,6 +40,7 @@
     app: commits
     domains:
       - commits.data.code.gouv.fr
+      - commits.ecosystem.code.gouv.fr
 - name: domains:remove commits.dokku.me
   dokku_domains:
     app: commits

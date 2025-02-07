@@ -39,6 +39,7 @@
     app: packages
     domains:
       - packages.data.code.gouv.fr
+      - packages.ecosystem.code.gouv.fr
 - name: domains:remove packages.dokku.me
   dokku_domains:
     app: packages

@@ -39,6 +39,7 @@
     app: parser
     domains:
       - parser.data.code.gouv.fr
+      - parser.ecosystem.code.gouv.fr
 - name: domains:remove parser.dokku.me
   dokku_domains:
     app: parser

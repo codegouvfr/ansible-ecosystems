@@ -22,7 +22,7 @@
       include_tasks: "services/{{ item }}.yml"
       with_items:
         - repos
-        - packages
-        - summary
-        - parser
-        - commits
+        # - packages
+        # - commits
+        # - summary
+        # - parser

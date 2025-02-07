@@ -30,10 +30,10 @@
       API_HOST: "https://summary.code.gouv.fr"
       SIDEKIQ_USERNAME: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_USERNAME') }}"
       SIDEKIQ_PASSWORD: "{{ lookup('ansible.builtin.env', 'SIDEKIQ_PASSWORD') }}"
-      REPOS_DOMAIN: "https://repos.data.code.gouv.fr"
-      PACKAGES_DOMAIN: "https://packages.data.code.gouv.fr"
-      PARSER_DOMAIN: "https://parser.data.code.gouv.fr"
-      COMMITS_DOMAIN: "https://commits.data.code.gouv.fr"
+      REPOS_DOMAIN: "https://repos.ecosystem.code.gouv.fr"
+      PACKAGES_DOMAIN: "https://packages.ecosystem.code.gouv.fr"
+      PARSER_DOMAIN: "https://parser.ecosystem.code.gouv.fr"
+      COMMITS_DOMAIN: "https://commits.ecosystem.code.gouv.fr"
 - name: git clone
   dokku_clone:
     app: summary
@@ -44,6 +44,7 @@
     app: summary
     domains:
       - summary.data.code.gouv.fr
+      - summary.ecosystem.code.gouv.fr
 - name: domains:remove summary.dokku.me
   dokku_domains:
     app: summary
