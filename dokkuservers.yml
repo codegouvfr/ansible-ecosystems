@@ -21,8 +21,9 @@
     - name: install services
       include_tasks: "services/{{ item }}.yml"
       with_items:
+        - archives
         - repos
-        # - packages
-        # - commits
-        # - summary
-        # - parser
+        - packages
+        - commits
+        - summary
+        - parser
